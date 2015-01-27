@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+
+	<head>
+		<title>Test</title>
+	</head>
+
+	<body>
+		<script src="gameOfLife.js"></script>
+		<script src="gameOfLifeView.js"></script>
+
+		<div id="gameOfLifeDiv"></div>
+
+		<script type="text/javascript">
+
+		function iterateGeneration () {
+			gameOfLifeView.updateView(gameOfLife);
+			gameOfLife = gameOfLife.getNextGeneration();
+
+			window.setTimeout("iterateGeneration()", 1000);
+		}
+
+		var gameOfLifeTable = gameOfLifeView.initialize(gameOfLife);
+
+		var gameOfLifeDiv = document.querySelector('#gameOfLifeDiv');
+		gameOfLifeDiv.appendChild(gameOfLifeTable);
+
+		iterateGeneration();
+		</script>
+	</body>
+
+</html>
