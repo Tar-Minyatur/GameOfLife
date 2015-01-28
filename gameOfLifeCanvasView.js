@@ -25,17 +25,38 @@ var gameOfLifeCanvasView = function (gameOfLife, targetElement) {
         gameOfLife.addListener(this);
     }
     
+    var canvas = this.createCanvas(gameOfLife);
+    targetElement.appendChild(canvas);
+    this.canvasContext = canvas.getContext('2d');
+    
+    this.textYPosition = this.gameOfLife.getRows() * (this.cellHeight + this.cellSpacing) + this.fontSize;
+    
+    this.initializeCache();
+    this.initializeGrid();
+    this.updateGrid();
+};
+
+gameOfLifeCanvasView.prototype.createCanvas = function (gameOfLife) {
+    'use strict';
+    
     var canvas = document.createElement('canvas');
     canvas.width = (this.cellWidth + this.cellSpacing) * gameOfLife.getColumns();
     canvas.height = (this.cellHeight + this.cellSpacing) * gameOfLife.getRows() + this.fontSize;
+    return canvas;
+};
 
-    this.textYPosition = this.gameOfLife.getRows() * (this.cellHeight + this.cellSpacing) + this.fontSize;
+gameOfLifeCanvasView.prototype.initializeCache = function () {
+    'use strict';
     
-    targetElement.appendChild(canvas);
+    var col, row;
     
-    this.canvasContext = canvas.getContext('2d');
-    this.initializeGrid();
-    this.updateGrid();
+    this.lastGrid = [];
+    for (row = (this.gameOfLife.getRows() - 1); row >= 0; row = row - 1) {
+        this.lastGrid[row] = [];
+        for (col = (this.gameOfLife.getColumns() - 1); col >= 0; col = col - 1) {
+            this.lastGrid[row][col] = null;
+        }
+    }
 };
 
 gameOfLifeCanvasView.prototype.initializeGrid = function () {
@@ -47,16 +68,35 @@ gameOfLifeCanvasView.prototype.initializeGrid = function () {
     });
 };
 
+gameOfLifeCanvasView.prototype.getCacheEntry = function (row, col) {
+    'use strict';
+    
+    return this.lastGrid[row][col];
+};
+
+gameOfLifeCanvasView.prototype.updateCacheEntry = function (row, col, state) {
+    'use strict';
+    
+    this.lastGrid[row][col] = state;
+};
+
 gameOfLifeCanvasView.prototype.updateGrid = function () {
     'use strict';
     
     this.mapGrid(function (position, canvasContext, view) {
-        var cellColor = view.gridColor;
-        if (view.gameOfLife.isCellAlive(position.col, position.row)) {
-            cellColor = view.aliveCellColor;
+        var cellColor = view.gridColor,
+            cellAlive = view.gameOfLife.isCellAlive(position.col, position.row),
+            previousState = view.getCacheEntry(position.row, position.col),
+            stateHasChanged = cellAlive !== previousState;
+        
+        if (stateHasChanged) {
+            if (cellAlive) {
+                cellColor = view.aliveCellColor;
+            }
+            canvasContext.fillStyle = cellColor;
+            canvasContext.fillRect(position.x, position.y, view.cellWidth, view.cellHeight);
+            view.updateCacheEntry(position.row, position.col, cellAlive);
         }
-        canvasContext.fillStyle = cellColor;
-        canvasContext.fillRect(position.x, position.y, view.cellWidth, view.cellHeight);
     });
     
     this.updateInfoLine();
