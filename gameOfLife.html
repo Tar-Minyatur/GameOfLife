@@ -3,27 +3,31 @@
 
 	<head>
 		<title>Test</title>
+        <style type="text/css">
+        #gameOfLifeDiv canvas {
+            border: 1px #d0d0d0 solid;
+            padding: 5px;
+        }
+        </style>
 	</head>
 
 	<body>
+        <h1>Game of Life</h1>
 		<script src="gameOfLife.js"></script>
-		<script src="gameOfLifeView.js"></script>
+        <script src="gameOfLifeCanvasView.js"></script>
 
-		<div id="gameOfLifeDiv"></div>
+        <div id="gameOfLifeDiv"></div>
 
 		<script type="text/javascript">
 
 		function iterateGeneration () {
-			gameOfLifeView.updateView(gameOfLife);
 			gameOfLife = gameOfLife.getNextGeneration();
 
 			window.setTimeout("iterateGeneration()", 1000);
 		}
-
-		var gameOfLifeTable = gameOfLifeView.initialize(gameOfLife);
-
-		var gameOfLifeDiv = document.querySelector('#gameOfLifeDiv');
-		gameOfLifeDiv.appendChild(gameOfLifeTable);
+        
+        var gameOfLifeDiv = document.querySelector('#gameOfLifeDiv');
+        var golCanvasView = new gameOfLifeCanvasView(gameOfLife, gameOfLifeDiv);
 
 		iterateGeneration();
 		</script>
