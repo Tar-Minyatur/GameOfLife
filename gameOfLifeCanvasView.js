@@ -59,11 +59,7 @@ gameOfLifeCanvasView.prototype.updateGrid = function () {
         canvasContext.fillRect(position.x, position.y, view.cellWidth, view.cellHeight);
     });
     
-    this.canvasContext.fillStyle = "rgb(255, 255, 255)";
-    this.canvasContext.fillRect(0, this.textYPosition - this.fontSize, this.canvasContext.canvas.width, this.fontSize);
-    this.canvasContext.fillStyle = "rgb(0, 0, 0)";
-    this.canvasContext.font = this.fontSize + "px serif";
-    this.canvasContext.fillText("Generation: " + this.gameOfLife.getGeneration(), this.cellSpacing, this.textYPosition);
+    this.updateInfoLine();
 };
 
 gameOfLifeCanvasView.prototype.mapGrid = function (callback) {
@@ -84,6 +80,16 @@ gameOfLifeCanvasView.prototype.mapGrid = function (callback) {
             callback(position, this.canvasContext, this);
         }
     }
+};
+
+gameOfLifeCanvasView.prototype.updateInfoLine = function () {
+    'use strict';
+    
+    this.canvasContext.fillStyle = "rgb(255, 255, 255)";
+    this.canvasContext.fillRect(0, this.textYPosition - this.fontSize, this.canvasContext.canvas.width, this.fontSize);
+    this.canvasContext.fillStyle = "rgb(20, 20, 20)";
+    this.canvasContext.font = this.fontSize + "px serif";
+    this.canvasContext.fillText("Generation: " + this.gameOfLife.getGeneration(), this.cellSpacing, this.textYPosition);
 };
 
 gameOfLifeCanvasView.prototype.notify = function (gameOfLife) {
